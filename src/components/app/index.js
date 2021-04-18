@@ -1,4 +1,4 @@
-import React from '../../macros/react/macro';
+import React from '@macros/react/macro';
 
 export default ({ className, name }) => (
   <div className={className}>

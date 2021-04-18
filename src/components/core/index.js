@@ -1,23 +1,26 @@
-import noop from 'lodash/noop';
-import { dirname, resolve } from 'path';
-import { Suspense, createElement, forwardRef, lazy, useCallback } from 'react';
+import { Suspense, forwardRef, lazy, useCallback } from 'react';
 
-export default forwardRef(({ path, render, ...settings }, ref) => {
+import { group, prepare } from './helpers';
+
+export default forwardRef(({ render, ...settings }, ref) => {
+  const enhance = useCallback(
+    modules => {
+      const dependencies = modules.reduce(group, {});
+
+      console.log({ dependencies });
+
+      return { default: render };
+    },
+    [render]
+  );
   const Component = useCallback(
     props => {
-      const test = resolve(dirname(path), './style.js');
-      const component = lazy(() =>
-        Promise.all([import('components/app/style').catch(noop)]).then(
-          (...modules) =>
-            console.log({ test, modules }) || {
-              default: render,
-            }
-        )
-      );
+      const dependencies = settings.dependencies.map(prepare);
+      const Component = lazy(() => Promise.all(dependencies).then(enhance));
 
-      return createElement(component, props);
+      return <Component {...props} />;
     },
-    [path, render]
+    [settings.dependencies, enhance]
   );
 
   return (
