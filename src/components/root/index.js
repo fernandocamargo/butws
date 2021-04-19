@@ -1,6 +1,8 @@
+// import React from '@macros/react/macro';
+
+import React from 'react';
 import { ThemeProvider as Theming } from 'styled-components';
 
-import React from '@macros/react/macro';
 import { App, Style } from 'components';
 import theme from 'themes';
 

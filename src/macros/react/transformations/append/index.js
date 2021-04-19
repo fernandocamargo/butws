@@ -1,7 +1,7 @@
 const { sync } = require('glob');
 const { dirname, parse, resolve } = require('path');
 
-const DEPENDENCIES = './*(hooks|style).js';
+const DEPENDENCIES = './*(hooks|statics|style).js';
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
