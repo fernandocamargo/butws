@@ -4,4 +4,5 @@ export default {
   },
   background: '#fff',
   color: '#282c34',
+  opacity: 0.5,
 };

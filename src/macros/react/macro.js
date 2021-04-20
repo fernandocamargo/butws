@@ -12,14 +12,15 @@ module.exports = createMacro(context => {
     },
   } = context;
   const transform = (current, item, index) => {
-    const apply = (next, { check, transform }) => {
-      const params = { stack: next, index, item };
-      const eligible = check.call(context, params);
+    const apply = (stack, { check, transform }) => {
+      const call = callback => callback.call(context, { stack, index, item });
 
-      return !eligible ? next : transform.call(context, params);
+      return call(check) ? call(transform) : stack;
     };
+    const transformed = Object.values(transformations).reduce(apply, []);
+    const next = transformed.length ? transformed : item;
 
-    return Object.values(transformations).reduce(apply, current);
+    return current.concat(next);
   };
   const changes = body.reduce(transform, []);
 

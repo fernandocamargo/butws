@@ -1,7 +1,7 @@
 const { sync } = require('glob');
-const { dirname, parse, resolve } = require('path');
-
-const DEPENDENCIES = './*(hooks|statics|style).js';
+const { dirname, join, parse, resolve } = require('path');
+const { normalize } = require('@helpers/path');
+const { DEPENDENCIES } = require('./constants');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
@@ -11,9 +11,9 @@ function transform({ item, stack }) {
   const {
     babel: {
       types: {
+        addComment,
         arrayExpression,
         arrowFunctionExpression,
-        blockStatement,
         callExpression,
         exportDefaultDeclaration,
         exportNamedDeclaration,
@@ -26,31 +26,36 @@ function transform({ item, stack }) {
         jSXOpeningElement,
         objectExpression,
         objectProperty,
-        returnStatement,
         stringLiteral,
         variableDeclaration,
         variableDeclarator,
+        ...types
       },
     },
     state: { filename },
   } = this;
-  const dependencies = sync(
-    resolve(dirname(filename), DEPENDENCIES)
-  ).map(path =>
-    objectExpression([
-      objectProperty(
-        identifier('load'),
-        arrowFunctionExpression(
-          [],
-          blockStatement([
-            returnStatement(
-              callExpression(identifier('import'), [stringLiteral(path)])
-            ),
-          ])
-        )
-      ),
-      objectProperty(identifier('name'), stringLiteral(parse(path).name)),
-    ])
+  const dependencies = sync(resolve(dirname(filename), DEPENDENCIES)).map(
+    path => {
+      const { name } = parse(path);
+      const webpackChunkName = join(normalize(path), name);
+
+      return objectExpression([
+        objectProperty(
+          identifier('load'),
+          arrowFunctionExpression(
+            [],
+            callExpression(types.import(), [
+              addComment(
+                stringLiteral(path),
+                'leading',
+                `webpackChunkName: "${webpackChunkName}"`
+              ),
+            ])
+          )
+        ),
+        objectProperty(identifier('name'), stringLiteral(name)),
+      ]);
+    }
   );
 
   return stack
@@ -75,32 +80,28 @@ function transform({ item, stack }) {
       exportDefaultDeclaration(
         arrowFunctionExpression(
           [identifier('props'), identifier('ref')],
-          blockStatement([
-            returnStatement(
-              jSXElement(
-                jSXOpeningElement(jSXIdentifier('Core'), [
-                  jSXAttribute(
-                    jSXIdentifier('dependencies'),
-                    jSXExpressionContainer(identifier('dependencies'))
-                  ),
-                  jSXAttribute(
-                    jSXIdentifier('props'),
-                    jSXExpressionContainer(identifier('props'))
-                  ),
-                  jSXAttribute(
-                    jSXIdentifier('ref'),
-                    jSXExpressionContainer(identifier('ref'))
-                  ),
-                  jSXAttribute(
-                    jSXIdentifier('render'),
-                    jSXExpressionContainer(identifier('render'))
-                  ),
-                ]),
-                jSXClosingElement(jSXIdentifier('Core')),
-                []
-              )
-            ),
-          ])
+          jSXElement(
+            jSXOpeningElement(jSXIdentifier('Core'), [
+              jSXAttribute(
+                jSXIdentifier('dependencies'),
+                jSXExpressionContainer(identifier('dependencies'))
+              ),
+              jSXAttribute(
+                jSXIdentifier('props'),
+                jSXExpressionContainer(identifier('props'))
+              ),
+              jSXAttribute(
+                jSXIdentifier('ref'),
+                jSXExpressionContainer(identifier('ref'))
+              ),
+              jSXAttribute(
+                jSXIdentifier('render'),
+                jSXExpressionContainer(identifier('render'))
+              ),
+            ]),
+            jSXClosingElement(jSXIdentifier('Core')),
+            []
+          )
         )
       )
     );
