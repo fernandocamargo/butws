@@ -1,4 +1,4 @@
-export const group = (stack, { module, name }) =>
+export const index = (stack, { module, name }) =>
   Object.assign(stack, { [name]: module });
 
 export const prepare = ({ load, name }) => {
