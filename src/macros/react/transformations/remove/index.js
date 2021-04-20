@@ -1,7 +1,7 @@
 function check({ item }) {
   return (
     item.type === 'ImportDeclaration' &&
-    item.source.value.endsWith('macros/react/macro')
+    item.source.value.endsWith('@macros/react/macro')
   );
 }
 
