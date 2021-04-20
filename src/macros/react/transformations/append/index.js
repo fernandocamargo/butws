@@ -1,7 +1,7 @@
-const { sync } = require('glob');
-const { dirname, join, parse, resolve } = require('path');
-const { normalize } = require('@helpers/path');
+const { sync: find } = require('glob');
+const { dirname, resolve } = require('path');
 const { DEPENDENCIES } = require('./constants');
+const { load } = require('./helpers');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
@@ -11,10 +11,8 @@ function transform({ item, stack }) {
   const {
     babel: {
       types: {
-        addComment,
         arrayExpression,
         arrowFunctionExpression,
-        callExpression,
         exportDefaultDeclaration,
         exportNamedDeclaration,
         identifier,
@@ -24,39 +22,14 @@ function transform({ item, stack }) {
         jSXExpressionContainer,
         jSXIdentifier,
         jSXOpeningElement,
-        objectExpression,
-        objectProperty,
-        stringLiteral,
         variableDeclaration,
         variableDeclarator,
-        ...types
       },
     },
     state: { filename },
   } = this;
-  const dependencies = sync(resolve(dirname(filename), DEPENDENCIES)).map(
-    path => {
-      const { name } = parse(path);
-      const webpackChunkName = join(normalize(path), name);
-
-      return objectExpression([
-        objectProperty(
-          identifier('load'),
-          arrowFunctionExpression(
-            [],
-            callExpression(types.import(), [
-              addComment(
-                stringLiteral(path),
-                'leading',
-                `webpackChunkName: "${webpackChunkName}"`
-              ),
-            ])
-          )
-        ),
-        objectProperty(identifier('name'), stringLiteral(name)),
-      ]);
-    }
-  );
+  const pattern = resolve(dirname(filename), DEPENDENCIES);
+  const dependencies = find(pattern).map(load.bind(this));
 
   return stack
     .concat(
