@@ -4,7 +4,7 @@ import { createElement, lazy, useCallback } from 'react';
 import { index, prepare } from './helpers';
 import enhancements from './enhancements';
 
-export const useCore = ({ dependencies, render, ...settings }) => {
+export const useCore = ({ render: current, dependencies, ...settings }) => {
   const core = useCallback(
     props => {
       const load = () => {
@@ -16,8 +16,12 @@ export const useCore = ({ dependencies, render, ...settings }) => {
 
             return !module ? render : transform({ render, ...indexes });
           };
+          const next = enhancements.reduce(
+            apply,
+            Object.assign(current, { displayName: '🎁' })
+          );
 
-          return { default: enhancements.reduce(apply, render) };
+          return { default: next };
         };
 
         return Promise.all(dependencies.map(prepare)).then(enhance);
@@ -26,7 +30,7 @@ export const useCore = ({ dependencies, render, ...settings }) => {
 
       return createElement(component, props);
     },
-    [render, dependencies]
+    [current, dependencies]
   );
   const Component = Object.assign(core, { displayName: '✨' });
 

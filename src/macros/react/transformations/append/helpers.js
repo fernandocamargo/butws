@@ -1,5 +1,16 @@
 const { normalize } = require('@helpers/path');
-const { join, parse } = require('path');
+const startCase = require('lodash/startCase');
+const { join, parse, sep } = require('path');
+
+const format = path => {
+  const tag = normalize(path)
+    .split(sep)
+    .slice(1)
+    .map(startCase)
+    .join(sep);
+
+  return `▓▓▓▓▓▓▓▓▓▓ ${tag} ▓▓▓▓▓▓▓▓▓▓`;
+};
 
 function load(path) {
   const {
@@ -38,4 +49,4 @@ function load(path) {
   ]);
 }
 
-module.exports = { load };
+module.exports = { format, load };

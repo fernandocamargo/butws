@@ -1,7 +1,7 @@
 const { sync: find } = require('glob');
 const { dirname, resolve } = require('path');
 const { DEPENDENCIES } = require('./constants');
-const { load } = require('./helpers');
+const { format, load } = require('./helpers');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
@@ -13,6 +13,7 @@ function transform({ item, stack }) {
       types: {
         arrayExpression,
         arrowFunctionExpression,
+        callExpression,
         exportDefaultDeclaration,
         exportNamedDeclaration,
         identifier,
@@ -22,6 +23,10 @@ function transform({ item, stack }) {
         jSXExpressionContainer,
         jSXIdentifier,
         jSXOpeningElement,
+        memberExpression,
+        objectExpression,
+        objectProperty,
+        stringLiteral,
         variableDeclaration,
         variableDeclarator,
       },
@@ -51,30 +56,41 @@ function transform({ item, stack }) {
     )
     .concat(
       exportDefaultDeclaration(
-        arrowFunctionExpression(
-          [identifier('props'), identifier('ref')],
-          jSXElement(
-            jSXOpeningElement(jSXIdentifier('Core'), [
-              jSXAttribute(
-                jSXIdentifier('dependencies'),
-                jSXExpressionContainer(identifier('dependencies'))
-              ),
-              jSXAttribute(
-                jSXIdentifier('props'),
-                jSXExpressionContainer(identifier('props'))
-              ),
-              jSXAttribute(
-                jSXIdentifier('ref'),
-                jSXExpressionContainer(identifier('ref'))
-              ),
-              jSXAttribute(
-                jSXIdentifier('render'),
-                jSXExpressionContainer(identifier('render'))
+        callExpression(
+          memberExpression(identifier('Object'), identifier('assign')),
+          [
+            arrowFunctionExpression(
+              [identifier('props'), identifier('ref')],
+              jSXElement(
+                jSXOpeningElement(jSXIdentifier('Core'), [
+                  jSXAttribute(
+                    jSXIdentifier('dependencies'),
+                    jSXExpressionContainer(identifier('dependencies'))
+                  ),
+                  jSXAttribute(
+                    jSXIdentifier('props'),
+                    jSXExpressionContainer(identifier('props'))
+                  ),
+                  jSXAttribute(
+                    jSXIdentifier('ref'),
+                    jSXExpressionContainer(identifier('ref'))
+                  ),
+                  jSXAttribute(
+                    jSXIdentifier('render'),
+                    jSXExpressionContainer(identifier('render'))
+                  ),
+                ]),
+                jSXClosingElement(jSXIdentifier('Core')),
+                []
+              )
+            ),
+            objectExpression([
+              objectProperty(
+                identifier('displayName'),
+                stringLiteral(format(filename))
               ),
             ]),
-            jSXClosingElement(jSXIdentifier('Core')),
-            []
-          )
+          ]
         )
       )
     );
