@@ -1,1 +1,2 @@
-export default ({ render, statics }) => Object.assign(render, statics);
+export default ({ render, statics: { module: statics } }) =>
+  Object.assign(render, statics);

@@ -1,17 +1,18 @@
+import get from 'lodash/get';
 import { createElement, lazy, useCallback } from 'react';
 
 import { index, prepare } from './helpers';
 import enhancements from './enhancements';
 
 export const useCore = ({ dependencies, render, ...settings }) => {
-  const Component = useCallback(
+  const core = useCallback(
     props => {
       const load = () => {
         const enhance = modules => {
           const indexes = modules.reduce(index, {});
           const apply = (render, meta) => {
             const [[name, transform]] = Object.entries(meta);
-            const { [name]: module } = indexes;
+            const module = get(indexes, [name, 'module']);
 
             return !module ? render : transform({ render, ...indexes });
           };
@@ -27,6 +28,7 @@ export const useCore = ({ dependencies, render, ...settings }) => {
     },
     [render, dependencies]
   );
+  const Component = Object.assign(core, { displayName: '✨' });
 
   return { Component, ...settings };
 };

@@ -4,11 +4,15 @@ export const defaultProps = {
   dependencies: [],
 };
 
-export const displayName = 'Core';
+export const displayName = '🧠';
 
 export const propTypes = {
   dependencies: arrayOf(
-    shape({ name: string.isRequired, load: func.isRequired })
+    shape({
+      load: func.isRequired,
+      name: string.isRequired,
+      namespace: string.isRequired,
+    })
   ),
   render: elementType.isRequired,
 };
