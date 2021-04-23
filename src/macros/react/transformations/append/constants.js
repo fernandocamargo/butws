@@ -1,3 +1,5 @@
 const DEPENDENCIES = './*(hooks|statics|style).js';
 
-module.exports = { DEPENDENCIES };
+const ROUTES = './**/\\[*\\]/index.js';
+
+module.exports = { DEPENDENCIES, ROUTES };
