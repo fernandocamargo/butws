@@ -1,6 +1,5 @@
 const { relative, resolve } = require('path');
 const { cwd } = require('process');
-
 const {
   compilerOptions: { baseUrl },
 } = require('@jsconfig');
