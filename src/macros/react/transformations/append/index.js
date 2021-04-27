@@ -1,13 +1,13 @@
 const { sync: find } = require('glob');
 const { dirname, resolve } = require('path');
-const { DEPENDENCIES } = require('./constants');
+const types = require('./dependencies');
 const { format, load } = require('./helpers');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
 }
 
-function transform({ item, stack }) {
+function transform({ item: { declaration: render }, stack }) {
   const {
     babel: {
       types: {
@@ -33,24 +33,29 @@ function transform({ item, stack }) {
     },
     state: { filename },
   } = this;
-  const pattern = resolve(dirname(filename), DEPENDENCIES);
-  const dependencies = find(pattern).map(load.bind(this));
+  const displayName = stringLiteral(format(filename));
+  const scan = ([type, dependency]) => {
+    const pattern = `./${dependency.identify()}.js`;
+    const items = find(resolve(dirname(filename), pattern));
+    const current = { load: load.bind(this), items };
+    const next = dependency.format.call(this, current);
+
+    return objectProperty(identifier(type), next);
+  };
+  const dependencies = objectExpression(Object.entries(types).map(scan));
 
   return stack
     .concat(
       exportNamedDeclaration(
         variableDeclaration('const', [
-          variableDeclarator(
-            identifier('dependencies'),
-            arrayExpression(dependencies)
-          ),
+          variableDeclarator(identifier('dependencies'), dependencies),
         ])
       )
     )
     .concat(
       exportNamedDeclaration(
         variableDeclaration('const', [
-          variableDeclarator(identifier('render'), item.declaration),
+          variableDeclarator(identifier('render'), render),
         ])
       )
     )
@@ -85,10 +90,7 @@ function transform({ item, stack }) {
               )
             ),
             objectExpression([
-              objectProperty(
-                identifier('displayName'),
-                stringLiteral(format(filename))
-              ),
+              objectProperty(identifier('displayName'), displayName),
             ]),
           ]
         )
