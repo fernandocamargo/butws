@@ -11,7 +11,6 @@ function transform({ item: { declaration: render }, stack }) {
   const {
     babel: {
       types: {
-        arrayExpression,
         arrowFunctionExpression,
         callExpression,
         exportDefaultDeclaration,

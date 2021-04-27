@@ -1,7 +1,7 @@
 const { parse } = require('path');
 const update = require('immutability-helper');
-const { sort } = require('./helpers');
 const { PATTERN } = require('./constants');
+const { sort } = require('./helpers');
 
 function format({ load, ...settings }) {
   const {
