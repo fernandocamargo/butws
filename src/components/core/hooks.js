@@ -1,34 +1,25 @@
-import get from 'lodash/get';
 import { createElement, lazy, useCallback } from 'react';
 
-import { index, prepare } from './helpers';
 import enhancements from './enhancements';
+
+export const combine = (stack, wrap) => wrap(stack);
 
 export const useCore = ({ render: current, dependencies, ...settings }) => {
   const core = useCallback(
     props => {
-      const load = () => {
-        const enhance = modules => {
-          const indexes = modules.reduce(index, {});
-          const apply = (render, meta) => {
-            const [[name, transform]] = Object.entries(meta);
-            const module = get(indexes, [name, 'module']);
+      const enhance = apply => apply(dependencies);
+      const format = layers => {
+        const next = layers.reduce(
+          combine,
+          Object.assign(current, { displayName: '🎁' })
+        );
 
-            return !module ? render : transform({ render, ...indexes });
-          };
-          const next = enhancements.reduce(
-            apply,
-            Object.assign(current, { displayName: '🎁' })
-          );
-
-          return { default: next };
-        };
-
-        return Promise.all(dependencies.map(prepare)).then(enhance);
+        return { default: next };
       };
-      const component = lazy(load);
+      const load = () =>
+        Promise.all(enhancements.map(enhance).filter(Boolean)).then(format);
 
-      return createElement(component, props);
+      return createElement(lazy(load), props);
     },
     [current, dependencies]
   );

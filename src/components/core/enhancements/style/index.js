@@ -1,17 +1,16 @@
+import get from 'lodash/get';
 import styled from 'styled-components';
 
 import { normalize } from './helpers';
 
-export default ({
-  style: {
-    module: { default: style },
-    namespace,
-  },
-  render,
-}) => {
-  const componentId = normalize(namespace);
-  const apply = styled(render).withConfig({ componentId });
-  const component = apply`${style}`;
+export default dependencies => {
+  const dependency = get(dependencies, ['style', 'default']);
+  const enhance = ({ default: style }) => current => {
+    const componentId = normalize(dependency.namespace);
+    const apply = styled(current).withConfig({ componentId });
 
-  return Object.assign(component, { displayName: '💅' });
+    return Object.assign(apply`${style}`, { displayName: '💅' });
+  };
+
+  return dependency && dependency.load().then(enhance);
 };
