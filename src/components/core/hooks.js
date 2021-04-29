@@ -1,8 +1,7 @@
 import { createElement, lazy, useCallback } from 'react';
 
+import { combine } from './helpers';
 import enhancements from './enhancements';
-
-export const combine = (stack, wrap) => wrap(stack);
 
 export const useCore = ({ render: current, dependencies, ...settings }) => {
   const core = useCallback(
