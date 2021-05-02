@@ -2,15 +2,10 @@ const { normalize } = require('@helpers/path');
 const startCase = require('lodash/startCase');
 const { parse, sep } = require('path');
 
-const format = path => {
-  const { dir } = parse(path);
-  const tag = normalize(dir)
-    .split(sep)
-    .slice(1)
-    .map(startCase)
-    .join(sep);
+const identify = path => {
+  const { dir, name } = parse(normalize(path));
 
-  return `▓▓▓▓▓▓▓▓▓▓ ${tag} ▓▓▓▓▓▓▓▓▓▓`;
+  return [dir, name].join(sep);
 };
 
 function load(path) {
@@ -28,7 +23,7 @@ function load(path) {
       },
     },
   } = this;
-  const namespace = normalize(path);
+  const namespace = identify(path);
 
   return objectExpression([
     objectProperty(
@@ -48,4 +43,15 @@ function load(path) {
   ]);
 }
 
-module.exports = { format, load };
+const print = path => {
+  const { dir } = parse(path);
+  const tag = normalize(dir)
+    .split(sep)
+    .slice(1)
+    .map(startCase)
+    .join(sep);
+
+  return `▓▓▓▓▓▓▓▓▓▓ ${tag} ▓▓▓▓▓▓▓▓▓▓`;
+};
+
+module.exports = { identify, load, print };

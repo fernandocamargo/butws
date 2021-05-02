@@ -1,7 +1,7 @@
 const { sync: find } = require('glob');
 const { dirname, resolve } = require('path');
 const types = require('./dependencies');
-const { format, load } = require('./helpers');
+const { identify, load, print } = require('./helpers');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
@@ -32,7 +32,8 @@ function transform({ item: { declaration: render }, stack }) {
     },
     state: { filename },
   } = this;
-  const displayName = stringLiteral(format(filename));
+  const namespace = stringLiteral(identify(filename));
+  const displayName = stringLiteral(print(filename));
   const scan = ([type, dependency]) => {
     const pattern = `./${dependency.identify()}.js`;
     const items = find(resolve(dirname(filename), pattern));
@@ -44,6 +45,13 @@ function transform({ item: { declaration: render }, stack }) {
   const dependencies = objectExpression(Object.entries(types).map(scan));
 
   return stack
+    .concat(
+      exportNamedDeclaration(
+        variableDeclaration('const', [
+          variableDeclarator(identifier('namespace'), namespace),
+        ])
+      )
+    )
     .concat(
       exportNamedDeclaration(
         variableDeclaration('const', [
@@ -70,6 +78,10 @@ function transform({ item: { declaration: render }, stack }) {
                   jSXAttribute(
                     jSXIdentifier('dependencies'),
                     jSXExpressionContainer(identifier('dependencies'))
+                  ),
+                  jSXAttribute(
+                    jSXIdentifier('namespace'),
+                    jSXExpressionContainer(identifier('namespace'))
                   ),
                   jSXAttribute(
                     jSXIdentifier('props'),
