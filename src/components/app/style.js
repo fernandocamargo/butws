@@ -8,4 +8,10 @@ export default css`
   font-size: 1rem;
   margin: 1rem;
   padding: 1rem;
+
+  blockquote {
+    box-shadow: 3px 3px 5px 6px rgba(0, 0, 0, 0.05);
+    margin: 1rem;
+    padding: 1rem;
+  }
 `;

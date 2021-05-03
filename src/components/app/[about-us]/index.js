@@ -1,3 +1,3 @@
-import React from 'react';
+import React from '@macros/react/macro';
 
-export default () => <h1>This is us</h1>;
+export default ({ className }) => <h1 className={className}>This is us</h1>;

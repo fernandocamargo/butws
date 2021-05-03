@@ -5,9 +5,9 @@ import { normalize } from './helpers';
 
 export default ({ dependencies }) => {
   const dependency = get(dependencies, ['style', 'default']);
-  const enhance = ({ default: style }) => current => {
+  const enhance = ({ default: style }) => component => {
     const componentId = normalize(dependency.namespace);
-    const apply = styled(current).withConfig({ componentId });
+    const apply = styled(component).withConfig({ componentId });
 
     return Object.assign(apply`${style}`, { displayName: '💅' });
   };

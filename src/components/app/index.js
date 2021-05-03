@@ -1,10 +1,11 @@
 import React from '@macros/react/macro';
+import { Fragment } from 'react';
 
 import { Button } from 'components/widgets';
 
 import Avatar from './avatar';
 
-export default ({ className, name, version }) => (
+export default ({ routing: { current }, className, name, version }) => (
   <div className={className}>
     <p>Lorem ipsum</p>
     <dl>
@@ -19,6 +20,13 @@ export default ({ className, name, version }) => (
     <Button>Click to do something</Button>
     <hr />
     <Avatar />
+    {!!current && (
+      <Fragment>
+        <hr />
+        <blockquote>{current}</blockquote>
+      </Fragment>
+    )}
+    <hr />
     <p>All rights reserved</p>
   </div>
 );
