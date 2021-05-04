@@ -1,7 +1,7 @@
 const { sync: find } = require('glob');
 const { dirname, resolve } = require('path');
 const types = require('./dependencies');
-const { identify, load, print } = require('./helpers');
+const { identify, load, print, sanitize } = require('./helpers');
 
 function check({ item }) {
   return item.type === 'ExportDefaultDeclaration';
@@ -32,11 +32,13 @@ function transform({ item: { declaration: render }, stack }) {
     },
     state: { filename },
   } = this;
+  const cwd = sanitize(dirname(filename));
   const namespace = stringLiteral(identify(filename));
   const displayName = stringLiteral(print(filename));
   const scan = ([type, dependency]) => {
     const pattern = `./${dependency.identify()}.js`;
-    const items = find(resolve(dirname(filename), pattern));
+    const path = resolve(cwd, pattern);
+    const items = find(path);
     const current = { load: load.bind(this), items };
     const next = dependency.format.call(this, current);
 

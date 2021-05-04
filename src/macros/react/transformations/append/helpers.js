@@ -1,6 +1,7 @@
 const { normalize } = require('@helpers/path');
 const startCase = require('lodash/startCase');
 const { parse, sep } = require('path');
+const { SAFE_SPECIAL_CHARS, SPECIAL_CHARS } = require('./constants');
 
 const identify = path => {
   const { dir, name } = parse(normalize(path));
@@ -54,4 +55,6 @@ const print = path => {
   return `▓▓▓▓▓▓▓▓▓▓ ${tag} ▓▓▓▓▓▓▓▓▓▓`;
 };
 
-module.exports = { identify, load, print };
+const sanitize = path => path.replace(SPECIAL_CHARS, SAFE_SPECIAL_CHARS);
+
+module.exports = { identify, load, print, sanitize };

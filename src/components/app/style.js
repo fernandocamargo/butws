@@ -10,6 +10,7 @@ export default css`
   padding: 1rem;
 
   blockquote {
+    background-color: #eaeaea;
     box-shadow: 3px 3px 5px 6px rgba(0, 0, 0, 0.05);
     margin: 1rem;
     padding: 1rem;
