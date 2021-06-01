@@ -5,7 +5,12 @@ import { Button } from 'components/widgets';
 
 import Avatar from './avatar';
 
-export default ({ routing: { current }, className, name, version }) => (
+export default ({
+  routing: { current } = { current: 'Fake' },
+  className,
+  name,
+  version,
+}) => (
   <div className={className}>
     <p>Lorem ipsum</p>
     <dl>

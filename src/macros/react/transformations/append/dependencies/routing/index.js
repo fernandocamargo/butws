@@ -3,12 +3,13 @@ const update = require('immutability-helper');
 const { PATTERN } = require('./constants');
 const { sort } = require('./helpers');
 
-function format({ load, ...settings }) {
+function format({ items, load }) {
   const {
     babel: {
-      types: { arrayExpression },
+      types: { arrayExpression, identifier, objectExpression, objectProperty },
     },
   } = this;
+  /*
   const extract = (stack, current) => {
     const { dir } = parse(current);
     const check = index => dir.startsWith(index);
@@ -26,8 +27,21 @@ function format({ load, ...settings }) {
     items: [],
     indexes: [],
   });
+  */
+  const extract = stack => stack;
+  const { '404': notFound, routes, settings } = items.reduce(extract, {
+    routes: [],
+  });
 
-  return arrayExpression(items);
+  console.log({ notFound, routes, settings });
+
+  return objectExpression(
+    [
+      !!notFound && objectProperty(identifier('404'), notFound),
+      !!settings && objectProperty(identifier('settings'), settings),
+      objectProperty(identifier('routes'), arrayExpression(routes)),
+    ].filter(Boolean)
+  );
 }
 
 function identify() {

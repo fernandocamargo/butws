@@ -1,3 +1,3 @@
-const PATTERN = '/**/\\[*\\]/index';
+const PATTERN = '/**/\\[*\\]/*(index|routing)';
 
 module.exports = { PATTERN };
