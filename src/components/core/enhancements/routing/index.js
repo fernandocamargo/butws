@@ -2,7 +2,7 @@
 // import { createElement } from 'react';
 // import { matchPath } from 'react-router';
 
-import { useLocation } from 'hooks';
+// import { useLocation } from 'hooks';
 
 // import { connect, validate } from './helpers';
 
@@ -14,9 +14,9 @@ export default ({
   },
   namespace,
 }) => {
+  /*
   const { pathname } = useLocation();
 
-  /*
   const translate = connect(namespace);
   const check = dependency => {
     const path = translate(dependency.namespace);

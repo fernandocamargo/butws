@@ -1,7 +1,10 @@
+const isEqual = require('lodash/isEqual');
 const { parse } = require('path');
-const update = require('immutability-helper');
+// const update = require('immutability-helper');
 const { PATTERN } = require('./constants');
-const { sort } = require('./helpers');
+// const { sort } = require('./helpers');
+
+const sanitize = (path) => path.replace(/^\[|\]$/gi, '').replace(/@/gi, ':');
 
 function format({ items, load }) {
   const {
@@ -28,12 +31,29 @@ function format({ items, load }) {
     indexes: [],
   });
   */
-  const extract = stack => stack;
-  const { '404': notFound, routes, settings } = items.reduce(extract, {
-    routes: [],
-  });
+  // update(stack, { routes: { $push: [route] } });
+  // const extract = (stack, current) => {
+  const extract = (stack, item) => {
+    const { dir, ...path } = parse(item);
+    const getName = () => {
+      switch (true) {
+        case isEqual(path.name, 'routing'):
+          return 'settings';
+        default:
+          return parse(dir).name;
+      }
+    };
+    const name = sanitize(getName());
 
-  console.log({ notFound, routes, settings });
+    // console.log({ name, item });
+
+    return stack;
+  };
+  const {
+    404: notFound,
+    routing: settings,
+    routes,
+  } = items.reduce(extract, { routes: [] });
 
   return objectExpression(
     [

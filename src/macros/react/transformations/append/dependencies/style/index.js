@@ -8,12 +8,11 @@ function format({ items, load }) {
       types: { identifier, objectExpression, objectProperty },
     },
   } = this;
-  const extract = current => {
-    const { dir, ...path } = parse(current);
+  const extract = (item) => {
+    const { dir, ...path } = parse(item);
     const name = isEqual(path.name, 'style') ? 'default' : parse(dir).name;
-    const next = load(current);
 
-    return objectProperty(identifier(name), next);
+    return objectProperty(identifier(name), load(item));
   };
 
   return objectExpression(items.map(extract));

@@ -5,12 +5,7 @@ import { Button } from 'components/widgets';
 
 import Avatar from './avatar';
 
-export default ({
-  routing: { current } = { current: 'Fake' },
-  className,
-  name,
-  version,
-}) => (
+export default ({ children, className, name, version }) => (
   <div className={className}>
     <p>Lorem ipsum</p>
     <dl>
@@ -25,10 +20,10 @@ export default ({
     <Button>Click to do something</Button>
     <hr />
     <Avatar />
-    {!!current && (
+    {children && (
       <Fragment>
         <hr />
-        <blockquote>{current}</blockquote>
+        <blockquote>{children}</blockquote>
       </Fragment>
     )}
     <hr />

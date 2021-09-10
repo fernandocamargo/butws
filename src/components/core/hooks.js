@@ -10,9 +10,9 @@ export const useCore = ({
   ...settings
 }) => {
   const core = useCallback(
-    props => {
-      const enhance = apply => apply({ dependencies, namespace });
-      const format = layers => {
+    (props) => {
+      const enhance = (apply) => apply({ dependencies, namespace });
+      const format = (layers) => {
         const next = layers.reduce(
           combine,
           Object.assign(current, { displayName: '🎁' })
@@ -30,7 +30,7 @@ export const useCore = ({
   const Component = Object.assign(core, { displayName: '✨' });
 
   console.group({ namespace });
-  console.log(JSON.stringify(dependencies.routing, null, 2));
+  console.log(dependencies);
   console.groupEnd();
 
   return { Component, ...settings };

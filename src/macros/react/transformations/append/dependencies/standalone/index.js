@@ -7,11 +7,10 @@ function format({ items, load }) {
       types: { identifier, objectExpression, objectProperty },
     },
   } = this;
-  const extract = current => {
-    const { name } = parse(current);
-    const next = load(current);
+  const extract = (item) => {
+    const { name } = parse(item);
 
-    return objectProperty(identifier(name), next);
+    return objectProperty(identifier(name), load(item));
   };
 
   return objectExpression(items.map(extract));
