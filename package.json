@@ -25,6 +25,7 @@
     "nodemon": "^2.0.12"
   },
   "scripts": {
+    "dev": "nodemon --inspect --ignore 'src/!(macros)/**/*.*' yarn start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
