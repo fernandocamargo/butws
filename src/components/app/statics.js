@@ -1,12 +1,12 @@
-import { node, string } from 'prop-types';
+import { node, shape, string } from 'prop-types';
 
 export const defaultProps = {
-  children: 'Fake',
-  version: '0.0.1',
+  routing: { routes: '[fake routes]' },
+  version: '0.0.666',
 };
 
 export const propTypes = {
-  children: node,
+  routing: shape({ routes: node }).isRequired,
   name: string.isRequired,
   version: string,
 };
